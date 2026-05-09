@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlmodel import Session, select
 
 from database import get_session
@@ -18,19 +18,47 @@ def generate_cover_url(isbn: str | None):
 @router.post("/", response_model=Book)
 def create_book(book: Book, session: Session = Depends(get_session)):
     if book.isbn and not book.cover_url:
-      book.cover_url = generate_cover_url(book.isbn)
+        book.cover_url = generate_cover_url(book.isbn)
+
     session.add(book)
     session.commit()
     session.refresh(book)
     return book
 
 
-@router.get("/")
-def get_books(session: Session = Depends(get_session)):
-    return session.exec(select(Book)).all()
+@router.get("/", response_model=list[Book])
+def get_books(
+    search: str | None = Query(default=None),
+    category: str | None = Query(default=None),
+    status: str | None = Query(default=None),
+    limit: int = Query(default=20, ge=1, le=100),
+    offset: int = Query(default=0, ge=0),
+    session: Session = Depends(get_session),
+):
+    statement = select(Book)
+
+    books = session.exec(statement).all()
+
+    if search:
+        search_lower = search.lower()
+        books = [
+            book
+            for book in books
+            if search_lower in book.title.lower()
+            or search_lower in book.author.lower()
+            or search_lower in book.category.lower()
+        ]
+
+    if category:
+        books = [book for book in books if book.category.lower() == category.lower()]
+
+    if status:
+        books = [book for book in books if book.status.lower() == status.lower()]
+
+    return books[offset : offset + limit]
 
 
-@router.get("/{book_id}")
+@router.get("/{book_id}", response_model=Book)
 def get_book(book_id: int, session: Session = Depends(get_session)):
     book = session.get(Book, book_id)
 
@@ -40,7 +68,7 @@ def get_book(book_id: int, session: Session = Depends(get_session)):
     return book
 
 
-@router.put("/{book_id}")
+@router.put("/{book_id}", response_model=Book)
 def update_book(book_id: int, updated_book: Book, session: Session = Depends(get_session)):
     book = session.get(Book, book_id)
 
