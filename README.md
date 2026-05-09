@@ -1,7 +1,8 @@
 # 📚 Book Library System
 
-A web-based Book Library System developed as part of a Software Architecture course project.  
-The system allows users to browse books, view details, borrow and return books, and enables administrators to manage the book collection.
+A web-based Book Library System developed as part of a Software Architecture course project.
+
+The system allows users to browse books, view book details, borrow and return books, and enables administrators to manage the book collection.
 
 ---
 
@@ -9,10 +10,10 @@ The system allows users to browse books, view details, borrow and return books, 
 
 This project demonstrates the application of **Software Architecture principles** using the **4+1 View Model** and a **layered (N-tier) architecture**.
 
-The system is implemented in two stages:
+The project is organized into two stages:
 
-- **Stage 1:** Core functionality + partial implementation (current)
-- **Stage 2:** Full system with database and authentication (planned)
+- **Stage 1:** Core functionality and initial architecture implementation
+- **Stage 2:** Improved backend with database integration, REST API endpoints, borrowing logic, seed data, and frontend-ready book data
 
 ---
 
@@ -21,10 +22,10 @@ The system is implemented in two stages:
 The system follows a **layered architecture**:
 
 | Layer | Description |
-|------|------------|
-| Presentation Layer | Frontend UI (user interaction, pages, navigation) |
-| Application Layer | Backend API implemented using FastAPI |
-| Data Layer | In-memory data (Stage 1), database planned for Stage 2 |
+|---|---|
+| Presentation Layer | Frontend UI for user interaction, pages, navigation, and book display |
+| Application Layer | FastAPI backend that handles business logic, API endpoints, borrowing and returning books |
+| Data Layer | SQLite database managed with SQLModel |
 
 ---
 
@@ -32,66 +33,95 @@ The system follows a **layered architecture**:
 
 ### 👤 User Features
 
-- View book list  
-- Search books (title, author, category)  
-- View book details  
-- Borrow book  
-- Return book  
+- View book list
+- Search books by title, author, or category
+- Filter books by category or availability status
+- View book details
+- Borrow books
+- Return books
+- View user loan records
+- See book cover images
+- See ISBN and page count information
 
 ### 🛠 Admin Features
 
-- Add books  
-- Update books  
-- Delete books  
+- Add books
+- Update books
+- Delete books
+- Manage book availability
+- Add ISBN and page count information
+- Automatically generate book cover URLs using ISBN
 
 ---
 
 ## 🔌 API Endpoints
 
 | Method | Endpoint | Description |
-|------|---------|------------|
-| GET | `/books` | Retrieve all books |
+|---|---|---|
+| GET | `/users/` | Get all users |
+| POST | `/users/` | Create a user |
+| GET | `/books/` | Get all books |
+| POST | `/books/` | Create a book |
 | GET | `/books/{book_id}` | Get book details |
+| PUT | `/books/{book_id}` | Update book |
+| DELETE | `/books/{book_id}` | Delete book |
 | POST | `/borrow/{book_id}` | Borrow a book |
 | POST | `/return/{book_id}` | Return a book |
+| GET | `/loans` | Get all loans |
+| GET | `/users/{user_id}/loans` | Get loans of a specific user |
 
 ---
 
-## Backend (FastAPI)
+## 🖥 Backend
 
-The backend is implemented using **FastAPI** and provides RESTful API endpoints.
+The backend is implemented using **FastAPI**, **SQLModel**, and **SQLite**.
 
-### Example: Borrow Book Logic
+Backend responsibilities:
 
-```bash
-@app.post("/borrow/{book_id}")
-def borrow_book(book_id: int):
-    for book in books:
-        if book["id"] == book_id:
-            if book["status"] == "Available":
-                book["status"] = "Borrowed"
-                return {"message": "Book borrowed successfully"}
-            return {"message": "Book is not available"}
-    return {"message": "Book not found"}
+- REST API endpoints
+- Database connection
+- Book CRUD operations
+- Borrow / Return logic
+- Availability control
+- User loan records
+- Seed data
+- Cover URL generation
+- CORS configuration for frontend integration
+
+Swagger documentation:
+
+```text
+http://127.0.0.1:8000/docs
 ```
+---
 
-## Frontend (Partial UI)
+## Frontend
 
-The UI includes:
+The frontend is implemented with React and communicates with the backend through REST API requests.
 
-Login page (role selection)
-Book list page
-Book detail page
-Borrow / Return actions
-Admin dashboard
+Frontend responsibilities:
 
-The frontend communicates with the backend via HTTP requests.
+- Display book list
+- Display book details
+- Show book cover images
+- Show ISBN and page count
+- Borrow and return books
+- Add, update, and delete books
+- Use search, filter, and pagination parameters from the backend
 
-## Technologies Used
-Technology	| Purpose |
-|------|---------|
-FastAPI	| Backend API |
-Python	| Backend language |
-React (partial/planned)	| Frontend |
-REST API	| Communication |
-UML	| System design |
+---
+
+  ## 🛠 Technologies Used
+
+| Technology | Purpose |
+|---|---|
+| FastAPI | Backend API |
+| Python | Backend language |
+| SQLModel | ORM and database models |
+| SQLite | Database |
+| React | Frontend UI |
+| REST API | Frontend-backend communication |
+| Swagger UI | API documentation and testing |
+| Open Library Covers API | Automatic book cover images |
+| UML | System design |
+| 4+1 View Model | Software architecture documentation |
