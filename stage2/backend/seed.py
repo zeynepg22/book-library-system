@@ -1,7 +1,7 @@
-from sqlmodel import Session, SQLModel
+from sqlmodel import Session, SQLModel, select
 
 from database import engine
-from models import Book
+from models import Book, User
 
 SQLModel.metadata.create_all(engine)
 
@@ -81,9 +81,27 @@ books = [
 ]
 
 with Session(engine) as session:
-    for book in books:
-        session.add(book)
 
-    session.commit()
+    existing_books = session.exec(select(Book)).all()
 
-print("Seed data inserted successfully.")
+    if not existing_books:
+
+        users = [
+            User(username="ada", role="admin"),
+            User(username="zeynep", role="user"),
+            User(username="dilruba", role="user"),
+            User(username="irem", role="user"),
+        ]
+
+        for user in users:
+            session.add(user)
+
+        for book in books:
+            session.add(book)
+
+        session.commit()
+
+        print("Seed data inserted successfully.")
+
+    else:
+        print("Seed data already exists.")
