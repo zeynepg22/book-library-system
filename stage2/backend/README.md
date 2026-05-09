@@ -17,6 +17,9 @@ This backend implements the Stage 2 API for the Book Library System using FastAP
 - Swagger API documentation
 - CORS support for React frontend
 - Environment variable configuration with `.env`
+- Email + password authentication
+- Password hashing using Passlib
+- User/Admin role support
 
 ---
 
@@ -26,6 +29,7 @@ This backend implements the Stage 2 API for the Book Library System using FastAP
 |---|---|---|
 | GET | /users/ | Get all users |
 | POST | /users/ | Create a user |
+| POST | /users/login | Login user |
 | GET | /books/ | Get all books |
 | POST | /books/ | Create a book |
 | GET | /books/{book_id} | Get book details |
@@ -38,23 +42,28 @@ This backend implements the Stage 2 API for the Book Library System using FastAP
 
 ---
 
-## Book Search / Filter / Pagination
+## Authentication
 
-Examples:
+The backend includes a basic authentication system with:
 
-```http
-/books?search=harry
-/books?category=Fantasy
-/books?status=Available
-/books?limit=5&offset=0
+- Email + password login
+- Password hashing using Passlib
+- User/Admin role support
+- Database-based user validation
+
+Example login response:
+
+```json
+{
+  "user_id": 1,
+  "email": "user@test.com",
+  "role": "user"
+}
 ```
----
 
-## Automatic Cover Images
+### Automatic Cover Images
 
 Book covers are automatically generated using the Open Library Covers API based on ISBN values.
-
----
 
 ## Run Backend
 
@@ -67,7 +76,7 @@ source venv/bin/activate
 
 pip install -r requirements.txt
 
-python seed.py
+python3 seed.py
 
 uvicorn main:app --reload
 ```
@@ -84,3 +93,4 @@ http://127.0.0.1:8000/docs
 - REST API
 - Swagger UI
 - Open Library Covers API
+- Passlib

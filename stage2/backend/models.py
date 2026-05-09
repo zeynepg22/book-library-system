@@ -7,6 +7,8 @@ from sqlmodel import SQLModel, Field
 class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str
+    email: str
+    password_hash: str
     role: str = "user"
 
 
@@ -28,4 +30,3 @@ class Loan(SQLModel, table=True):
     borrow_date: date
     return_date: Optional[date] = None
     status: str = "Active"
-

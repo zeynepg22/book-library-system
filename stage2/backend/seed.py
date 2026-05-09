@@ -1,9 +1,25 @@
 from sqlmodel import Session, SQLModel, select
 
+from auth import hash_password
 from database import engine
 from models import Book, User
 
 SQLModel.metadata.create_all(engine)
+
+users = [
+    User(
+        username="Test User",
+        email="user@test.com",
+        password_hash=hash_password("password123"),
+        role="user",
+    ),
+    User(
+        username="Admin User",
+        email="admin@test.com",
+        password_hash=hash_password("admin123"),
+        role="admin",
+    ),
+]
 
 books = [
     Book(
@@ -82,26 +98,22 @@ books = [
 
 with Session(engine) as session:
 
-    existing_books = session.exec(select(Book)).all()
+    for user in users:
+        existing_user = session.exec(
+            select(User).where(User.email == user.email)
+        ).first()
 
-    if not existing_books:
-
-        users = [
-            User(username="ada", role="admin"),
-            User(username="zeynep", role="user"),
-            User(username="dilruba", role="user"),
-            User(username="irem", role="user"),
-        ]
-
-        for user in users:
+        if not existing_user:
             session.add(user)
 
-        for book in books:
+    for book in books:
+        existing_book = session.exec(
+            select(Book).where(Book.isbn == book.isbn)
+        ).first()
+
+        if not existing_book:
             session.add(book)
 
-        session.commit()
+    session.commit()
 
-        print("Seed data inserted successfully.")
-
-    else:
-        print("Seed data already exists.")
+print("Seed data checked successfully.")
