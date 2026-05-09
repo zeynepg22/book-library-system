@@ -16,6 +16,9 @@ class Book(SQLModel, table=True):
     author: str
     category: str
     status: str = "Available"
+    isbn: Optional[str] = None
+    pages: Optional[int] = None
+    cover_url: Optional[str] = None
 
 
 class Loan(SQLModel, table=True):

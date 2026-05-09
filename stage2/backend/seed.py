@@ -1,23 +1,82 @@
-from sqlmodel import Session
+from sqlmodel import Session, SQLModel
 
 from database import engine
 from models import Book
+
+SQLModel.metadata.create_all(engine)
 
 books = [
     Book(
         title="1984",
         author="George Orwell",
-        category="Dystopian"
+        category="Dystopian",
+        status="Available",
+        isbn="9780451524935",
+        pages=328,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780451524935-L.jpg",
     ),
     Book(
         title="The Hobbit",
         author="J.R.R. Tolkien",
-        category="Fantasy"
+        category="Fantasy",
+        status="Available",
+        isbn="9780547928227",
+        pages=310,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780547928227-L.jpg",
+    ),
+    Book(
+        title="Harry Potter and the Sorcerer's Stone",
+        author="J.K. Rowling",
+        category="Fantasy",
+        status="Available",
+        isbn="9780590353427",
+        pages=309,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780590353427-L.jpg",
+    ),
+    Book(
+        title="The Little Prince",
+        author="Antoine de Saint-Exupéry",
+        category="Classic",
+        status="Available",
+        isbn="9780156012195",
+        pages=96,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780156012195-L.jpg",
+    ),
+    Book(
+        title="Pride and Prejudice",
+        author="Jane Austen",
+        category="Romance",
+        status="Available",
+        isbn="9780141439518",
+        pages=279,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780141439518-L.jpg",
+    ),
+    Book(
+        title="The Great Gatsby",
+        author="F. Scott Fitzgerald",
+        category="Classic",
+        status="Available",
+        isbn="9780743273565",
+        pages=180,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780743273565-L.jpg",
     ),
     Book(
         title="To Kill a Mockingbird",
         author="Harper Lee",
-        category="Classic"
+        category="Classic",
+        status="Available",
+        isbn="9780061120084",
+        pages=336,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780061120084-L.jpg",
+    ),
+    Book(
+        title="Animal Farm",
+        author="George Orwell",
+        category="Political Satire",
+        status="Available",
+        isbn="9780451526342",
+        pages=112,
+        cover_url="https://covers.openlibrary.org/b/isbn/9780451526342-L.jpg",
     ),
 ]
 

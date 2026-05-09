@@ -7,8 +7,18 @@ from models import Book
 router = APIRouter(prefix="/books", tags=["Books"])
 
 
-@router.post("/")
+def generate_cover_url(isbn: str | None):
+    if not isbn:
+        return None
+
+    clean_isbn = isbn.replace("-", "").replace(" ", "")
+    return f"https://covers.openlibrary.org/b/isbn/{clean_isbn}-L.jpg"
+
+
+@router.post("/", response_model=Book)
 def create_book(book: Book, session: Session = Depends(get_session)):
+    if book.isbn and not book.cover_url:
+      book.cover_url = generate_cover_url(book.isbn)
     session.add(book)
     session.commit()
     session.refresh(book)
@@ -41,6 +51,9 @@ def update_book(book_id: int, updated_book: Book, session: Session = Depends(get
     book.author = updated_book.author
     book.category = updated_book.category
     book.status = updated_book.status
+    book.isbn = updated_book.isbn
+    book.pages = updated_book.pages
+    book.cover_url = updated_book.cover_url or generate_cover_url(updated_book.isbn)
 
     session.add(book)
     session.commit()
