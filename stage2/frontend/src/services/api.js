@@ -18,16 +18,15 @@ async function request(endpoint, options = {}) {
 }
 
 function buildQuery(params = {}) {
-  const searchParams = new URLSearchParams();
+  const query = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== "" && value !== "All") {
-      searchParams.append(key, value);
+      query.append(key, value);
     }
   });
 
-  const queryString = searchParams.toString();
-
+  const queryString = query.toString();
   return queryString ? `?${queryString}` : "";
 }
 
@@ -68,4 +67,33 @@ export const loanAPI = {
   getAll: () => request("/loans"),
 
   getUserLoans: (userId = 1) => request(`/users/${userId}/loans`),
+};
+
+export const userAPI = {
+  getAll: () => request("/users/"),
+
+  create: (user) =>
+    request("/users/", {
+      method: "POST",
+      body: JSON.stringify(user),
+    }),
+};
+
+export const authAPI = {
+  login: async (email, password) => {
+    const response = await fetch("http://127.0.0.1:8000/users/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => null);
+      throw new Error(error?.detail || "Invalid email or password");
+    }
+
+    return response.json();
+  },
 };

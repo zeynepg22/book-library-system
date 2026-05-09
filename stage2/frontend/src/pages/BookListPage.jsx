@@ -95,7 +95,6 @@ function BookListPage() {
       <Sidebar />
 
       <main className="flex-1 p-8">
-        {/* HEADER */}
         <div className="mb-8 rounded-[2rem] bg-white p-7 shadow-sm">
           <div className="flex items-center justify-between gap-8">
             <div>
@@ -135,7 +134,6 @@ function BookListPage() {
           </div>
         </div>
 
-        {/* FILTERS */}
         <div className="mb-8 rounded-[2rem] bg-white p-6 shadow-sm">
           <div className="mb-5 flex items-center justify-between">
             <div>
@@ -203,7 +201,6 @@ function BookListPage() {
           </div>
         )}
 
-        {/* BOOK GRID */}
         <div className="grid grid-cols-4 gap-6">
           {books.map((book) => {
             const isAvailable = book.status === "Available";
@@ -246,6 +243,11 @@ function BookListPage() {
                   </span>
                 </div>
 
+                <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
+                  <span>{book.pages ? `${book.pages} pages` : "Pages N/A"}</span>
+                  <span>{book.isbn ? `ISBN: ${book.isbn}` : "ISBN N/A"}</span>
+                </div>
+
                 <button
                   onClick={() => navigate(`/book-details/${book.id}`)}
                   className="mt-5 w-full rounded-2xl bg-orange-500 py-3 text-sm font-bold text-white transition hover:bg-orange-600"
@@ -257,7 +259,6 @@ function BookListPage() {
           })}
         </div>
 
-        {/* PAGINATION */}
         <div className="mt-8 flex items-center justify-center gap-4">
           <button
             disabled={offset === 0}

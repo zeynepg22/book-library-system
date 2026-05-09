@@ -1,27 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-function getOrCreateUserId(email) {
-  const normalizedEmail = email.trim().toLowerCase();
-
-  const savedUsers = JSON.parse(localStorage.getItem("libraryUsers")) || {};
-
-  if (savedUsers[normalizedEmail]) {
-    return savedUsers[normalizedEmail];
-  }
-
-  const newUserId = Date.now();
-
-  const updatedUsers = {
-    ...savedUsers,
-    [normalizedEmail]: newUserId,
-  };
-
-  localStorage.setItem("libraryUsers", JSON.stringify(updatedUsers));
-
-  return newUserId;
-}
-
+import { authAPI } from "../services/api";
 
 function LoginPage() {
   const navigate = useNavigate();
@@ -29,36 +8,38 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function loginAsUser(e) {
-    e.preventDefault();
-
-    if (!email || !password) {
+  async function handleLogin(expectedRole) {
+    if (!email.trim() || !password.trim()) {
       alert("Please enter email and password");
       return;
     }
 
-    const normalizedEmail = email.trim().toLowerCase();
-    const userId = getOrCreateUserId(normalizedEmail);
+    try {
+      const data = await authAPI.login(
+        email.trim().toLowerCase(),
+        password
+      );
 
-    localStorage.setItem("role", "user");
-    localStorage.setItem("userId", userId);
-    localStorage.setItem("userEmail", normalizedEmail);
+      const userRole = data.role;
+      const userId = data.user_id || data.id;
 
-    navigate("/books");
-  }
+      if (userRole !== expectedRole) {
+        alert(`This account is not a ${expectedRole} account`);
+        return;
+      }
 
-  function loginAsAdmin(e) {
-    e.preventDefault();
+      localStorage.setItem("userId", String(userId));
+      localStorage.setItem("role", userRole);
+      localStorage.setItem("userEmail", data.email);
 
-    if (!email || !password) {
-      alert("Please enter email and password");
-      return;
+      if (userRole === "admin") {
+        navigate("/admin-dashboard");
+      } else {
+        navigate("/books");
+      }
+    } catch (error) {
+      alert(error.message || "Login failed");
     }
-
-    localStorage.setItem("role", "admin");
-    localStorage.setItem("userEmail", email.trim().toLowerCase());
-
-    navigate("/admin-dashboard");
   }
 
   return (
@@ -79,7 +60,7 @@ function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
             <div>
               <label className="mb-2 block text-sm font-bold text-slate-700">
                 Email or Username
@@ -109,14 +90,16 @@ function LoginPage() {
             </div>
 
             <button
-              onClick={loginAsUser}
+              type="button"
+              onClick={() => handleLogin("user")}
               className="w-full rounded-2xl bg-pink-400 py-3 text-sm font-bold text-white shadow-lg shadow-pink-100 transition hover:bg-pink-500"
             >
               Login as User
             </button>
 
             <button
-              onClick={loginAsAdmin}
+              type="button"
+              onClick={() => handleLogin("admin")}
               className="w-full rounded-2xl border border-blue-200 bg-white py-3 text-sm font-bold text-blue-500 transition hover:bg-blue-50"
             >
               Login as Admin
@@ -124,7 +107,7 @@ function LoginPage() {
           </form>
 
           <p className="mt-5 text-center text-xs text-slate-400">
-            Demo account • Any password works
+            Demo account • Use seeded user/admin credentials
           </p>
         </div>
       </div>
