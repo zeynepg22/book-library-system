@@ -4,16 +4,6 @@ import Sidebar from "../components/Sidebar";
 import BookCover from "../components/BookCover";
 import { bookAPI, loanAPI } from "../services/api";
 
-const pageCounts = {
-  "Atomic Habits": 320,
-  "1984": 328,
-  "The Hobbit": 310,
-  "To Kill a Mockingbird": 336,
-  "The Little Prince": 96,
-  "The Midnight Library": 304,
-  "Intermezzo" : 412,
-};
-
 function BookDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -42,8 +32,10 @@ function BookDetailsPage() {
     try {
       setBorrowLoading(true);
       const userId = localStorage.getItem("userId") || "1";
+
       await loanAPI.borrow(book.id, userId);
       await fetchBook();
+
       alert("Book borrowed successfully!");
     } catch (err) {
       alert(err.message);
@@ -92,7 +84,6 @@ function BookDetailsPage() {
   }
 
   const isAvailable = book.status === "Available";
-  const pageCount = pageCounts[book.title] || "Unknown";
 
   return (
     <div className="flex min-h-screen bg-slate-100">
@@ -107,7 +98,6 @@ function BookDetailsPage() {
         </button>
 
         <div className="grid min-h-[calc(100vh-120px)] grid-cols-[360px_1fr] gap-6">
-          {/* COVER */}
           <section className="rounded-[2rem] bg-white p-6 shadow-sm">
             <div className="mx-auto max-w-[280px]">
               <BookCover
@@ -118,7 +108,6 @@ function BookDetailsPage() {
             </div>
           </section>
 
-          {/* DETAILS */}
           <section className="rounded-[2rem] bg-white p-8 shadow-sm">
             <div className="mb-6 flex items-start justify-between gap-6">
               <div>
@@ -144,16 +133,23 @@ function BookDetailsPage() {
               <div className="rounded-3xl bg-orange-50 px-6 py-4 text-center">
                 <p className="text-sm font-bold text-orange-400">Pages</p>
                 <p className="mt-1 text-3xl font-black text-orange-600">
-                  {pageCount}
+                  {book.pages || "N/A"}
                 </p>
               </div>
             </div>
 
-            <div className="mb-6 grid grid-cols-3 gap-4">
+            <div className="mb-6 grid grid-cols-4 gap-4">
               <div className="rounded-3xl bg-slate-50 p-5">
                 <p className="text-sm font-bold text-slate-400">Category</p>
                 <p className="mt-2 text-xl font-black text-slate-800">
                   {book.category}
+                </p>
+              </div>
+
+              <div className="rounded-3xl bg-violet-50 p-5">
+                <p className="text-sm font-bold text-violet-400">ISBN</p>
+                <p className="mt-2 break-all text-sm font-black text-slate-800">
+                  {book.isbn || "N/A"}
                 </p>
               </div>
 

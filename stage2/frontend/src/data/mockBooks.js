@@ -3,7 +3,7 @@ const mockBooks = [
     id: 1,
     title: "The Great Gatsby",
     author: "F. Scott Fitzgerald",
-    image: "https://m.media-amazon.com/images/I/71kxa1-0mfL.jpg",
+
     category: "Fiction",
     status: "Available",
     published: 1925,

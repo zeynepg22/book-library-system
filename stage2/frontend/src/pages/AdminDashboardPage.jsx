@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
+import BookCover from "../components/BookCover";
 import { bookAPI, loanAPI } from "../services/api";
 
 function addDays(dateString, days) {
@@ -31,7 +32,6 @@ function getUserEmailById(userId) {
 
 function AdminDashboardPage() {
   const [searchParams, setSearchParams] = useSearchParams();
-
   const activeTab = searchParams.get("tab") || "overview";
 
   const [books, setBooks] = useState([]);
@@ -41,6 +41,8 @@ function AdminDashboardPage() {
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [category, setCategory] = useState("");
+  const [isbn, setIsbn] = useState("");
+  const [pages, setPages] = useState("");
 
   async function fetchAdminData() {
     try {
@@ -71,11 +73,15 @@ function AdminDashboardPage() {
         author,
         category,
         status: "Available",
+        isbn,
+        pages: Number(pages),
       });
 
       setTitle("");
       setAuthor("");
       setCategory("");
+      setIsbn("");
+      setPages("");
 
       await fetchAdminData();
       alert("Book created successfully!");
@@ -145,54 +151,46 @@ function AdminDashboardPage() {
         />
 
         <div className="mb-6 grid grid-cols-4 gap-5">
-  <div className="rounded-[2rem] bg-gradient-to-br from-purple-50 to-purple-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-      📚
-    </div>
+          <div className="rounded-[2rem] bg-gradient-to-br from-purple-50 to-purple-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+              📚
+            </div>
+            <p className="text-sm font-bold text-slate-500">Total Books</p>
+            <h3 className="mt-2 text-4xl font-black text-slate-800">
+              {books.length}
+            </h3>
+          </div>
 
-    <p className="text-sm font-bold text-slate-500">Total Books</p>
+          <div className="rounded-[2rem] bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+              ✅
+            </div>
+            <p className="text-sm font-bold text-slate-500">Available</p>
+            <h3 className="mt-2 text-4xl font-black text-emerald-600">
+              {availableBooks}
+            </h3>
+          </div>
 
-    <h3 className="mt-2 text-4xl font-black text-slate-800">
-      {books.length}
-    </h3>
-  </div>
+          <div className="rounded-[2rem] bg-gradient-to-br from-orange-50 to-orange-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+              👜
+            </div>
+            <p className="text-sm font-bold text-slate-500">Active Loans</p>
+            <h3 className="mt-2 text-4xl font-black text-orange-600">
+              {activeLoans}
+            </h3>
+          </div>
 
-  <div className="rounded-[2rem] bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-      ✅
-    </div>
-
-    <p className="text-sm font-bold text-slate-500">Available</p>
-
-    <h3 className="mt-2 text-4xl font-black text-emerald-600">
-      {availableBooks}
-    </h3>
-  </div>
-
-  <div className="rounded-[2rem] bg-gradient-to-br from-orange-50 to-orange-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-      👜
-    </div>
-
-    <p className="text-sm font-bold text-slate-500">Active Loans</p>
-
-    <h3 className="mt-2 text-4xl font-black text-orange-600">
-      {activeLoans}
-    </h3>
-  </div>
-
-  <div className="rounded-[2rem] bg-gradient-to-br from-rose-50 to-rose-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
-    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
-      ⚠️
-    </div>
-
-    <p className="text-sm font-bold text-slate-500">Overdue</p>
-
-    <h3 className="mt-2 text-4xl font-black text-rose-600">
-      {overdueLoans}
-    </h3>
-  </div>
-</div>
+          <div className="rounded-[2rem] bg-gradient-to-br from-rose-50 to-rose-100 p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+            <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl shadow-sm">
+              ⚠️
+            </div>
+            <p className="text-sm font-bold text-slate-500">Overdue</p>
+            <h3 className="mt-2 text-4xl font-black text-rose-600">
+              {overdueLoans}
+            </h3>
+          </div>
+        </div>
 
         <div className="mb-6 flex w-fit gap-2 rounded-3xl bg-white p-2 shadow-sm">
           {tabs.map((tab) => (
@@ -233,6 +231,7 @@ function AdminDashboardPage() {
                       <p className="text-sm font-bold text-slate-500">
                         Book Availability
                       </p>
+
                       <h3 className="mt-3 text-4xl font-black text-blue-500">
                         {books.length === 0
                           ? "0%"
@@ -240,6 +239,7 @@ function AdminDashboardPage() {
                               (availableBooks / books.length) * 100
                             )}%`}
                       </h3>
+
                       <p className="mt-2 text-sm text-slate-400">
                         {availableBooks} available / {borrowedBooks} borrowed
                       </p>
@@ -249,6 +249,7 @@ function AdminDashboardPage() {
                       <p className="text-sm font-bold text-slate-500">
                         Loan Completion
                       </p>
+
                       <h3 className="mt-3 text-4xl font-black text-pink-500">
                         {loans.length === 0
                           ? "0%"
@@ -256,6 +257,7 @@ function AdminDashboardPage() {
                               (returnedLoans / loans.length) * 100
                             )}%`}
                       </h3>
+
                       <p className="mt-2 text-sm text-slate-400">
                         {returnedLoans} returned / {activeLoans} active
                       </p>
@@ -271,31 +273,36 @@ function AdminDashboardPage() {
                       {loans.length === 0 ? (
                         <p className="text-slate-400">No recent loans.</p>
                       ) : (
-                        loans.slice(-6).reverse().map((loan) => (
-                          <div
-                            key={loan.id}
-                            className="mb-3 flex items-center justify-between rounded-2xl bg-white px-4 py-3"
-                          >
-                            <div>
-                              <p className="font-bold text-slate-700">
-                                {getBookTitle(loan.book_id)}
-                              </p>
-                              <p className="text-sm text-slate-400">
-                                {getUserEmailById(loan.user_id)} • Borrowed {loan.borrow_date}  
-                              </p>
-                            </div>
-
-                            <span
-                              className={`rounded-full px-3 py-1 text-xs font-bold ${
-                                loan.status === "Active"
-                                  ? "bg-orange-100 text-orange-600"
-                                  : "bg-emerald-100 text-emerald-600"
-                              }`}
+                        loans
+                          .slice(-6)
+                          .reverse()
+                          .map((loan) => (
+                            <div
+                              key={loan.id}
+                              className="mb-3 flex items-center justify-between rounded-2xl bg-white px-4 py-3"
                             >
-                              {loan.status}
-                            </span>
-                          </div>
-                        ))
+                              <div>
+                                <p className="font-bold text-slate-700">
+                                  {getBookTitle(loan.book_id)}
+                                </p>
+
+                                <p className="text-sm text-slate-400">
+                                  {getUserEmailById(loan.user_id)} • Borrowed{" "}
+                                  {loan.borrow_date}
+                                </p>
+                              </div>
+
+                              <span
+                                className={`rounded-full px-3 py-1 text-xs font-bold ${
+                                  loan.status === "Active"
+                                    ? "bg-orange-100 text-orange-600"
+                                    : "bg-emerald-100 text-emerald-600"
+                                }`}
+                              >
+                                {loan.status}
+                              </span>
+                            </div>
+                          ))
                       )}
                     </div>
                   </div>
@@ -325,6 +332,7 @@ function AdminDashboardPage() {
                       <p className="text-sm font-bold text-slate-400">
                         System Note
                       </p>
+
                       <p className="mt-2 text-sm leading-6 text-slate-500">
                         Due date is calculated as 14 days after the borrow date.
                         Overdue loans are highlighted automatically.
@@ -370,6 +378,24 @@ function AdminDashboardPage() {
                       required
                     />
 
+                    <input
+                      type="text"
+                      placeholder="ISBN"
+                      value={isbn}
+                      onChange={(e) => setIsbn(e.target.value)}
+                      className="w-full rounded-2xl border border-slate-200 px-5 py-4 outline-none focus:ring-2 focus:ring-orange-200"
+                      required
+                    />
+
+                    <input
+                      type="number"
+                      placeholder="Pages"
+                      value={pages}
+                      onChange={(e) => setPages(e.target.value)}
+                      className="w-full rounded-2xl border border-slate-200 px-5 py-4 outline-none focus:ring-2 focus:ring-orange-200"
+                      required
+                    />
+
                     <button
                       type="submit"
                       className="w-full rounded-2xl bg-orange-500 px-5 py-4 font-bold text-white transition hover:bg-orange-600"
@@ -390,10 +416,13 @@ function AdminDashboardPage() {
                     </span>
                   </div>
 
-                  <div className="max-h-[270px] overflow-y-auto pr-2">
+                  <div className="max-h-[520px] overflow-y-auto pr-2">
                     <table className="w-full">
                       <thead className="sticky top-0 bg-white">
                         <tr className="border-b border-slate-100 text-left">
+                          <th className="pb-4 text-sm font-bold text-slate-400">
+                            Cover
+                          </th>
                           <th className="pb-4 text-sm font-bold text-slate-400">
                             Title
                           </th>
@@ -402,6 +431,12 @@ function AdminDashboardPage() {
                           </th>
                           <th className="pb-4 text-sm font-bold text-slate-400">
                             Category
+                          </th>
+                          <th className="pb-4 text-sm font-bold text-slate-400">
+                            Pages
+                          </th>
+                          <th className="pb-4 text-sm font-bold text-slate-400">
+                            ISBN
                           </th>
                           <th className="pb-4 text-sm font-bold text-slate-400">
                             Status
@@ -415,13 +450,32 @@ function AdminDashboardPage() {
                       <tbody>
                         {books.map((book) => (
                           <tr key={book.id} className="border-b border-slate-50">
+                            <td className="py-4">
+                              <div className="h-20 w-14 overflow-hidden rounded-xl bg-slate-100">
+                                <BookCover book={book} size="h-20" />
+                              </div>
+                            </td>
+
                             <td className="py-5 font-bold text-slate-700">
                               {book.title}
                             </td>
-                            <td className="py-5 text-slate-500">{book.author}</td>
+
+                            <td className="py-5 text-slate-500">
+                              {book.author}
+                            </td>
+
                             <td className="py-5 text-slate-500">
                               {book.category}
                             </td>
+
+                            <td className="py-5 text-slate-500">
+                              {book.pages || "-"}
+                            </td>
+
+                            <td className="max-w-[140px] break-all py-5 text-xs text-slate-500">
+                              {book.isbn || "-"}
+                            </td>
+
                             <td className="py-5">
                               <span
                                 className={`rounded-full px-3 py-1 text-xs font-bold ${
@@ -433,6 +487,7 @@ function AdminDashboardPage() {
                                 {book.status}
                               </span>
                             </td>
+
                             <td className="py-5">
                               <button
                                 onClick={() => handleDeleteBook(book.id)}
@@ -499,15 +554,19 @@ function AdminDashboardPage() {
                               <td className="py-5 font-bold text-slate-700">
                                 {getUserEmailById(loan.user_id)}
                               </td>
+
                               <td className="py-5 text-slate-500">
                                 {getBookTitle(loan.book_id)}
                               </td>
+
                               <td className="py-5 text-slate-500">
                                 {loan.borrow_date}
                               </td>
+
                               <td className="py-5 text-slate-500">
                                 {addDays(loan.borrow_date, 14)}
                               </td>
+
                               <td className="py-5">
                                 <span
                                   className={`rounded-full px-3 py-1 text-xs font-bold ${
@@ -519,6 +578,7 @@ function AdminDashboardPage() {
                                   {loan.status}
                                 </span>
                               </td>
+
                               <td className="py-5">
                                 <span
                                   className={`rounded-full px-3 py-1 text-xs font-bold ${

@@ -17,8 +17,22 @@ async function request(endpoint, options = {}) {
   return response.json();
 }
 
+function buildQuery(params = {}) {
+  const searchParams = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "" && value !== "All") {
+      searchParams.append(key, value);
+    }
+  });
+
+  const queryString = searchParams.toString();
+
+  return queryString ? `?${queryString}` : "";
+}
+
 export const bookAPI = {
-  getAll: () => request("/books/"),
+  getAll: (params = {}) => request(`/books/${buildQuery(params)}`),
 
   getById: (bookId) => request(`/books/${bookId}`),
 
@@ -41,7 +55,7 @@ export const bookAPI = {
 };
 
 export const loanAPI = {
-  borrow: (bookId, userId) =>
+  borrow: (bookId, userId = 1) =>
     request(`/borrow/${bookId}?user_id=${userId}`, {
       method: "POST",
     }),
@@ -53,5 +67,5 @@ export const loanAPI = {
 
   getAll: () => request("/loans"),
 
-  getUserLoans: (userId) => request(`/users/${userId}/loans`),
+  getUserLoans: (userId = 1) => request(`/users/${userId}/loans`),
 };

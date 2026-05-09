@@ -22,30 +22,6 @@ function getOrCreateUserId(email) {
   return newUserId;
 }
 
-function getOrCreateUserId(email) {
-  const normalizedEmail = email.trim().toLowerCase();
-
-  const savedUsers =
-    JSON.parse(localStorage.getItem("libraryUsers")) || {};
-
-  if (savedUsers[normalizedEmail]) {
-    return savedUsers[normalizedEmail];
-  }
-
-  const newUserId = Date.now();
-
-  const updatedUsers = {
-    ...savedUsers,
-    [normalizedEmail]: newUserId,
-  };
-
-  localStorage.setItem(
-    "libraryUsers",
-    JSON.stringify(updatedUsers)
-  );
-
-  return newUserId;
-}
 
 function LoginPage() {
   const navigate = useNavigate();
